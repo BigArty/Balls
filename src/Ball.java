@@ -8,4 +8,5 @@ public class Ball {
     double vY;
     double  m;
     Color c;
+    doblCoord a;
 }

@@ -186,10 +186,19 @@ public class Main {
         o1.y = o1.y + o2.y;
         return o1;
     }
+    private static double helpDouble;
+    private static doblCoord N;
     static doblCoord a(int i, int j, doblCoord A){
-        if (((ball[i].x - ball[j].x) * (ball[i].x - ball[j].x) + (ball[i].y - ball[j].y) * (ball[i].y - ball[j].y)) <= ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
-            int a;
-
+        if (((ball[i].x - ball[j].x) * (ball[i].x - ball[j].x) + (ball[i].y - ball[j].y) * (ball[i].y - ball[j].y)) <= ((ball[i].r + ball[j].r+2) * (ball[i].r + ball[j].r+2))) {
+            N.x = ball[i].x - ball[j].x;
+            N.y = ball[i].y - ball[j].y;
+            helpDouble = Math.sqrt(N.x * N.x + N.y * N.y);
+            helpDouble = 1.0 / helpDouble;
+            N.x = N.x * helpDouble;
+            N.y = N.y * helpDouble;
+            helpDouble=1.0/(((ball[i].x - ball[j].x) * (ball[i].x - ball[j].x) + (ball[i].y - ball[j].y) * (ball[i].y - ball[j].y))-((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r)));
+            mul(helpDouble,N);
+            N=aHelp;
         }
         else{
             A.x=0;
