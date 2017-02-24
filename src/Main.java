@@ -186,10 +186,17 @@ public class Main {
         o1.y = o1.y + o2.y;
         return o1;
     }
-    static doblCoord a(int i, int g){
-        
+    static doblCoord a(int i, int j, doblCoord A){
+        if (((ball[i].x - ball[j].x) * (ball[i].x - ball[j].x) + (ball[i].y - ball[j].y) * (ball[i].y - ball[j].y)) <= ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
+            int a;
 
-        return new doblCoord();
+        }
+        else{
+            A.x=0;
+            A.y=0;
+        }
+
+            return A;
     }
 
 }
