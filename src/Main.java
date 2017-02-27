@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-    static int n = 200;
+    static int n =50;
     static Ball[] ball;
     static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -110,7 +110,7 @@ public class Main {
             } catch (InterruptedException ignored) {
             }*/
             f.repaint();
-            while (t < 0.2) {
+            while (t < 1) {
                 t += h;
                 mersonStep();
             }
