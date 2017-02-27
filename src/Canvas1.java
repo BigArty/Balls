@@ -12,9 +12,9 @@ public class Canvas1 extends JComponent {
         Graphics2D g = (Graphics2D) a;
         for(int i=0;i<Main.n;i++){
             g.setColor(Main.ball[i].c);
-            g.fillOval((int)((Main.ball[i].y)-Main.ball[i].r)*w/Main.width,(int)((Main.ball[i].x)-Main.ball[i].r)*h/Main.height,(int)Main.ball[i].r*2*w/Main.width,(int)Main.ball[i].r*2*h/Main.height);
+            g.fillOval((int)((Main.ball[i].q.q.y)-Main.ball[i].r)*w/Main.width,(int)((Main.ball[i].q.q.x)-Main.ball[i].r)*h/Main.height,(int)(Main.ball[i].r+2)*2*w/Main.width,(int)(Main.ball[i].r+2)*2*h/Main.height);
             g.setColor(Color.black);
-            //g.drawString(i+"",(int)((Main.ball[i].y)*w/Main.width),(int)((Main.ball[i].x))*h/Main.height);
+            g.drawString(i+"",(int)((Main.ball[i].q.q.y)*w/Main.width),(int)((Main.ball[i].q.q.x))*h/Main.height);
         }
 
     }
