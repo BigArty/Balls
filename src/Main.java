@@ -2,14 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-    static int n =50;
+    static int n = 50;
     static Ball[] ball;
     static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
     private static double startH = 0.1;
-    static double eps = 0.0004;
-    static double h = startH;
+    private static double eps = 0.0004;
+    private static double h = startH;
 
     private static doblCoord aHelp = new doblCoord();
     private static doblCoord[] dV = new doblCoord[n];
@@ -37,7 +37,7 @@ public class Main {
             ball[i] = new Ball();
             ball[i].q = new ddoblCoord();
             while (!OK) {
-                ball[i].r = (int) (Math.random() * 10) + 10;
+                ball[i].r = (int) (Math.random() * 30) + 10;
                 ball[i].q.q.x = (2 * ball[i].r + Math.random() * (height - 4 * ball[i].r));
                 ball[i].q.q.y = (2 * ball[i].r + Math.random() * (width - 4 * ball[i].r));
                 OK = true;
@@ -110,7 +110,7 @@ public class Main {
             } catch (InterruptedException ignored) {
             }*/
             f.repaint();
-            while (t < 1) {
+            while (t < 2) {
                 t += h;
                 mersonStep();
             }
@@ -250,7 +250,7 @@ public class Main {
     private static doblCoord N = new doblCoord();
 
     private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
-        if (((a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y)) <= ((ball[i].r + ball[j].r + 2.1) * (ball[i].r + ball[j].r + 2.1))) {
+        if (((a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y)) <= ((ball[i].r + ball[j].r + 4) * (ball[i].r + ball[j].r + 4))) {
             N.x = a[i].q.x - a[j].q.x;
             N.y = a[i].q.y - a[j].q.y;
             helpDouble = Math.sqrt(N.x * N.x + N.y * N.y);
@@ -258,7 +258,12 @@ public class Main {
             N.x = N.x * helpDouble2;
             N.y = N.y * helpDouble2;
             helpDouble = 1000.0 / (helpDouble - (ball[i].r + ball[j].r));
-            mul(helpDouble, N, F.dqdt);
+            if (helpDouble < 0) {
+                F.dqdt.x = 0;
+                F.dqdt.y = 0;
+            } else {
+                mul(helpDouble, N, F.dqdt);
+            }
         } else {
             F.dqdt.x = 0;
             F.dqdt.y = 0;
