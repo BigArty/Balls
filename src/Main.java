@@ -2,18 +2,21 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-    static int n = 50;
+    static double gravity = 0.0003;
+    static int n = 70;
     static Ball[] ball;
     static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-    private static double startH = 0.1;
-    private static double eps = 0.0004;
+    private static double startH = 0.001;
+    private static double eps = 0.001;
+    private static double epsV = 0.001;
     private static double h = startH;
 
     private static doblCoord aHelp = new doblCoord();
     private static doblCoord[] dV = new doblCoord[n];
     private static double E = 0;
+    static double M = 0;
 
     public static void main(String[] args) {
         f.setLocation(0, 0);
@@ -42,14 +45,14 @@ public class Main {
                 ball[i].q.q.y = (2 * ball[i].r + Math.random() * (width - 4 * ball[i].r));
                 OK = true;
                 for (int j = 0; j < i; ++j) {
-                    if (((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
+                    if (((ball[i].r + ball[j].r + 4) * (ball[i].r + ball[j].r + 4)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
                         OK = false;
                     }
                 }
             }
             OK = false;
-            ball[i].q.dqdt.x = (Math.random() * 6) - 3;
-            ball[i].q.dqdt.y = (Math.random() * 6) - 3;
+            ball[i].q.dqdt.x = ((Math.random() * 1)) / 100;
+            ball[i].q.dqdt.y = ((Math.random() * 1)) / 100;
             int col = (int) (Math.random() * 10);
             ball[i].m = ball[i].r * ball[i].r;
             ball[i].m1 = 1.0 / ball[i].m;
@@ -95,6 +98,26 @@ public class Main {
         System.out.println("window");
         f.add(new Canvas1());
         f.setVisible(true);
+        double Vx = 0;
+        double Vy = 0;
+        for (int i = 0; i < Main.n; ++i) {
+            M += Main.ball[i].m;
+        }
+        for (int i = 0; i < Main.n; ++i) {
+            Vx += ball[i].m * ball[i].q.dqdt.x;
+            Vy += ball[i].m * ball[i].q.dqdt.y;
+        }
+        Vx = Vx / M;
+        Vy = Vy / M;
+        for (int i = 0; i < n; ++i) {
+            ball[i].q.dqdt.x -= Vx;
+            ball[i].q.dqdt.y -= Vy;
+        }
+
+
+        new Energy();
+
+
         doblCoord V1n = new doblCoord();
         doblCoord V2n = new doblCoord();
         doblCoord V1n2 = new doblCoord();
@@ -106,15 +129,43 @@ public class Main {
         while (true) {
             t = 0;
             /*try {
-                Thread.sleep(1);
+                Thread.sleep(10);
             } catch (InterruptedException ignored) {
             }*/
             f.repaint();
-            while (t < 2) {
+            while (t < 0.09) {
                 t += h;
                 mersonStep();
             }
+            /*for (int i = 0; i < n; ++i) {
+                if ((ball[i].q.q.x > height - ball[i].r)) {
+                    ball[i].q.dqdt.x = -ball[i].q.dqdt.x;
+                    ball[i].q.q.x = ball[i].q.q.x - 1;
+                } else {
+                    if ((ball[i].q.q.x < ball[i].r)) {
+                        ball[i].q.dqdt.x = -ball[i].q.dqdt.x;
+                        ball[i].q.q.x = ball[i].q.q.x + 1;
+
+                    }
+                }
+                if ((ball[i].q.q.y > width - ball[i].r)) {
+                    ball[i].q.dqdt.y = -ball[i].q.dqdt.y;
+                    ball[i].q.q.y = ball[i].q.q.y - 1;
+                } else {
+                    if ((ball[i].q.q.y < ball[i].r)) {
+
+                        ball[i].q.dqdt.y = -ball[i].q.dqdt.y;
+                        ball[i].q.q.y = ball[i].q.q.y + 1;
+                    }
+                }
+            }*/
+
+            /*e = 0;
             for (int i = 0; i < n; ++i) {
+                dV[i].x = 0;
+                dV[i].y = 0;
+                ball[i].q.q.x = ball[i].q.q.x + ball[i].q.dqdt.x;
+                ball[i].q.q.y = ball[i].q.q.y + ball[i].q.dqdt.y;
                 if ((ball[i].q.q.x > height - ball[i].r) || (ball[i].q.q.x < ball[i].r)) {
                     ball[i].q.dqdt.x = -ball[i].q.dqdt.x;
                     ball[i].q.q.x = ball[i].q.q.x + ball[i].q.dqdt.x;
@@ -122,22 +173,6 @@ public class Main {
                 if ((ball[i].q.q.y > width - ball[i].r) || (ball[i].q.q.y < ball[i].r)) {
                     ball[i].q.dqdt.y = -ball[i].q.dqdt.y;
                     ball[i].q.q.y = ball[i].q.q.y + ball[i].q.dqdt.y;
-                }
-            }
-
-           /* e = 0;
-            for (int i = 0; i < n; ++i) {
-                dV[i].x = 0;
-                dV[i].y = 0;
-                ball[i].q.x = ball[i].q.x + ball[i].q.dqdt.x;
-                ball[i].q.y = ball[i].q.y + ball[i].q.dqdt.y;
-                if ((ball[i].q.x > height - ball[i].r) || (ball[i].q.x < ball[i].r)) {
-                    ball[i].q.dqdt.x = -ball[i].q.dqdt.x;
-                    ball[i].q.x = ball[i].q.x + ball[i].q.dqdt.x;
-                }
-                if ((ball[i].q.y > width - ball[i].r) || (ball[i].q.y < ball[i].r)) {
-                    ball[i].q.dqdt.y = -ball[i].q.dqdt.y;
-                    ball[i].q.y = ball[i].q.y + ball[i].q.dqdt.y;
                 }
 
                 e += ball[i].m * (ball[i].q.dqdt.x * ball[i].q.dqdt.x + ball[i].q.dqdt.y * ball[i].q.dqdt.y);
@@ -158,10 +193,10 @@ public class Main {
             }
             for (int i = 0; i < n; ++i) {
                 for (int j = i + 1; j < n; ++j) {
-                    if (((ball[i].q.x - ball[j].q.x) * (ball[i].q.x - ball[j].q.x) + (ball[i].q.y - ball[j].q.y) * (ball[i].q.y - ball[j].q.y)) <= ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
+                    if (((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y)) <= ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
 
-                        H.x = ball[i].q.x - ball[j].q.x;
-                        H.y = ball[i].q.y - ball[j].q.y;
+                        H.x = ball[i].q.q.x - ball[j].q.q.x;
+                        H.y = ball[i].q.q.y - ball[j].q.q.y;
                         norm = Math.sqrt(H.x * H.x + H.y * H.y);
                         norm = 1.0 / norm;
                         H.x = H.x * norm;
@@ -247,26 +282,31 @@ public class Main {
 
     private static double helpDouble;
     private static double helpDouble2;
+    private static double helpDouble3;
     private static doblCoord N = new doblCoord();
+    private static double dist = 0;
 
     private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
-        if (((a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y)) <= ((ball[i].r + ball[j].r + 4) * (ball[i].r + ball[j].r + 4))) {
+        dist = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
+        if ((dist) > ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
             N.x = a[i].q.x - a[j].q.x;
             N.y = a[i].q.y - a[j].q.y;
-            helpDouble = Math.sqrt(N.x * N.x + N.y * N.y);
-            helpDouble2 = 1.0 / helpDouble;
-            N.x = N.x * helpDouble2;
-            N.y = N.y * helpDouble2;
-            helpDouble = 1000.0 / (helpDouble - (ball[i].r + ball[j].r));
-            if (helpDouble < 0) {
-                F.dqdt.x = 0;
-                F.dqdt.y = 0;
-            } else {
-                mul(helpDouble, N, F.dqdt);
+            //helpDouble = Math.sqrt(dist);
+            if ((dist) <= ((ball[i].r + ball[j].r + 8) * (ball[i].r + ball[j].r + 8))) {
+                helpDouble2 = 1000.0/(dist - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
             }
+            else {
+                helpDouble= (dist++);
+                helpDouble2 = -gravity * ball[i].m * ball[j].m / (helpDouble);
+            }
+            mul(helpDouble2, N, F.dqdt);
+
         } else {
+
+
             F.dqdt.x = 0;
             F.dqdt.y = 0;
+
         }
         F.q.x = a[i].dqdt.x;
         F.q.y = a[i].dqdt.y;
@@ -287,118 +327,144 @@ public class Main {
     private static ddoblCoord F = new ddoblCoord();
     private static ddoblCoord dVHelp = new ddoblCoord();
     private static double[] er = new double[n];
+    private static double[] erV = new double[n];
     private static boolean isHChenge = false;
     private static ddoblCoord nul = new ddoblCoord();
+    private static boolean correct = false;
 
     static int mersonStep() {
-        isHChenge = false;
-        for (int i = 0; i < n; ++i) {
-            mem(k0[i], ball[i].q);
-            mem(k1[i], nul);
-            mem(k2[i], nul);
-            mem(k3[i], nul);
-            mem(k4[i], nul);
-            mem(k5[i], nul);
-        }
+        while (!correct) {
+            isHChenge = false;
+            for (int i = 0; i < n; ++i) {
+                mem(k0[i], ball[i].q);
+                mem(k1[i], nul);
+                mem(k2[i], nul);
+                mem(k3[i], nul);
+                mem(k4[i], nul);
+                mem(k5[i], nul);
+            }
 
-        // Step 1
+            // Step 1
 
-        mem(dVHelp, nul);
-        for (int i = 0; i < n; ++i) {
+            mem(dVHelp, nul);
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (i != j) {
+                        f(i, j, F, k0);
+                        mul(ball[i].m1, F.dqdt, F.dqdt);
+                        dVHelp = sum(dVHelp, F);
+                    }
+                }
+                mul(h * o3, dVHelp, dVHelp);
+                k1[i] = sum(k1[i], dVHelp);
+            }
+
+            //Step 2
+
+            mem(dVHelp, nul);
             for (int j = 0; j < n; ++j) {
-                if (i != j) {
-                    f(i, j, F, k0);
-                    mul(ball[i].m1, F, F);
-                    dVHelp = sum(dVHelp, F);
+                k0[j] = sum(k0[j], k1[j]);
+            }
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (i != j) {
+                        f(i, j, F, k0);
+                        mul(ball[i].m1, F.dqdt, F.dqdt);
+                        dVHelp = sum(dVHelp, F);
+                    }
+                }
+                mul(h * o3, dVHelp, dVHelp);
+                k2[i] = sum(k2[i], dVHelp);
+            }
+
+            //Step 3
+
+            mem(dVHelp, nul);
+            for (int j = 0; j < n; ++j) {
+                k0[j].q.x = ball[j].q.q.x + 0.5 * (k1[j].q.x + k2[j].q.x);
+                k0[j].q.y = ball[j].q.q.y + 0.5 * (k1[j].q.y + k2[j].q.y);
+
+                k0[j].dqdt.x = ball[j].q.dqdt.x + 0.5 * (k1[j].dqdt.x + k2[j].dqdt.x);
+                k0[j].dqdt.y = ball[j].q.dqdt.y + 0.5 * (k1[j].dqdt.y + k2[j].dqdt.y);
+            }
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (i != j) {
+                        f(i, j, F, k0);
+                        mul(ball[i].m1, F.dqdt, F.dqdt);
+                        dVHelp = sum(dVHelp, F);
+                    }
+                }
+                mul(h, dVHelp, dVHelp);
+                k3[i] = sum(k3[i], dVHelp);
+            }
+
+            //Step 4
+
+            mem(dVHelp, nul);
+            for (int j = 0; j < n; ++j) {
+                k0[j].q.x = ball[j].q.q.x + 0.375 * (k1[j].q.x + k3[j].q.x);
+                k0[j].q.y = ball[j].q.q.y + 0.375 * (k1[j].q.y + k3[j].q.y);
+
+                k0[j].dqdt.x = ball[j].q.dqdt.x + 0.375 * (k1[j].dqdt.x + k3[j].dqdt.x);
+                k0[j].dqdt.y = ball[j].q.dqdt.y + 0.375 * (k1[j].dqdt.y + k3[j].dqdt.y);
+            }
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (i != j) {
+                        f(i, j, F, k0);
+                        mul(ball[i].m1, F.dqdt, F.dqdt);
+                        dVHelp = sum(dVHelp, F);
+                    }
+                }
+                mul(o3 * h * 4, dVHelp, dVHelp);
+                k4[i] = sum(sum(k4[i], k1[i]), dVHelp);
+            }
+
+            //Step 5
+
+            mem(dVHelp, nul);
+            for (int j = 0; j < n; ++j) {
+                k0[j].q.x = ball[j].q.q.x + 1.5 * (k4[j].q.x - k3[j].q.x);
+                k0[j].q.y = ball[j].q.q.y + 1.5 * (k4[j].q.y - k3[j].q.y);
+
+                k0[j].dqdt.x = ball[j].q.dqdt.x + 1.5 * (k4[j].dqdt.x - k3[j].dqdt.x);
+                k0[j].dqdt.y = ball[j].q.dqdt.y + 1.5 * (k4[j].dqdt.y - k3[j].dqdt.y);
+            }
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (i != j) {
+                        f(i, j, F, k0);
+                        mul(ball[i].m1, F.dqdt, F.dqdt);
+                        dVHelp = sum(dVHelp, F);
+                    }
+                }
+                mul(o3 * h, dVHelp, dVHelp);
+                k5[i] = sum(k5[i], dVHelp);
+            }
+
+            //Error
+
+            correct = true;
+
+            for (int i = 0; i < n; ++i) {
+                if (!isHChenge) {
+                    er[i] = ((k4[i].q.x * 2 - k3[i].q.x * 3 - k5[i].q.x) * (k4[i].q.x * 2 - k3[i].q.x * 3 - k5[i].q.x) + (k4[i].q.y * 2 - k3[i].q.y * 3 - k5[i].q.y) * (k4[i].q.y * 2 - k3[i].q.y * 3 - k5[i].q.y));
+                    if (er[i] > (eps * eps)) {
+                        h = h * 0.5;
+                        isHChenge = true;
+                        correct = false;
+                    }
+                    erV[i] = (k4[i].dqdt.x * 2 - k3[i].dqdt.x * 3 - k5[i].dqdt.x) * (k4[i].dqdt.x * 2 - k3[i].dqdt.x * 3 - k5[i].dqdt.x) + (k4[i].dqdt.y * 2 - k3[i].dqdt.y * 3 - k5[i].dqdt.y) * (k4[i].dqdt.y * 2 - k3[i].dqdt.y * 3 - k5[i].dqdt.y);
+                    if (erV[i] > (epsV * epsV)) {
+                        h = h * 0.5;
+                        isHChenge = true;
+                        correct = false;
+                    }
                 }
             }
-            mul(h * o3, dVHelp, dVHelp);
-            k1[i] = sum(k1[i], dVHelp);
         }
-
-        //Step 2
-
-        mem(dVHelp, nul);
-        for (int j = 0; j < n; ++j) {
-            k0[j] = sum(k0[j], k1[j]);
-        }
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (i != j) {
-                    f(i, j, F, k0);
-                    mul(ball[i].m1, F, F);
-                    dVHelp = sum(dVHelp, F);
-                }
-            }
-            mul(h * o3, dVHelp, dVHelp);
-            k2[i] = sum(k2[i], dVHelp);
-        }
-
-        //Step 3
-
-        mem(dVHelp, nul);
-        for (int j = 0; j < n; ++j) {
-            k0[j].q.x = ball[j].q.q.x + 0.5 * (k1[j].q.x + k2[j].q.x);
-            k0[j].q.y = ball[j].q.q.y + 0.5 * (k1[j].q.y + k2[j].q.y);
-
-            k0[j].dqdt.x = ball[j].q.dqdt.x + 0.5 * (k1[j].dqdt.x + k2[j].dqdt.x);
-            k0[j].dqdt.y = ball[j].q.dqdt.y + 0.5 * (k1[j].dqdt.y + k2[j].dqdt.y);
-        }
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (i != j) {
-                    f(i, j, F, k0);
-                    mul(ball[i].m1, F, F);
-                    dVHelp = sum(dVHelp, F);
-                }
-            }
-            mul(h, dVHelp, dVHelp);
-            k3[i] = sum(k3[i], dVHelp);
-        }
-
-        //Step 4
-
-        mem(dVHelp, nul);
-        for (int j = 0; j < n; ++j) {
-            k0[j].q.x = ball[j].q.q.x + 0.375 * (k1[j].q.x + k3[j].q.x);
-            k0[j].q.y = ball[j].q.q.y + 0.375 * (k1[j].q.y + k3[j].q.y);
-
-            k0[j].dqdt.x = ball[j].q.dqdt.x + 0.375 * (k1[j].dqdt.x + k3[j].dqdt.x);
-            k0[j].dqdt.y = ball[j].q.dqdt.y + 0.375 * (k1[j].dqdt.y + k3[j].dqdt.y);
-        }
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (i != j) {
-                    f(i, j, F, k0);
-                    mul(ball[i].m1, F, F);
-                    dVHelp = sum(dVHelp, F);
-                }
-            }
-            mul(o3 * h * 4, dVHelp, dVHelp);
-            k4[i] = sum(sum(k4[i], k1[i]), dVHelp);
-        }
-
-        //Step 5
-
-        mem(dVHelp, nul);
-        for (int j = 0; j < n; ++j) {
-            k0[j].q.x = ball[j].q.q.x + 1.5 * (k4[j].q.x - k3[j].q.x);
-            k0[j].q.y = ball[j].q.q.y + 1.5 * (k4[j].q.y - k3[j].q.y);
-
-            k0[j].dqdt.x = ball[j].q.dqdt.x + 1.5 * (k4[j].dqdt.x - k3[j].dqdt.x);
-            k0[j].dqdt.y = ball[j].q.dqdt.y + 1.5 * (k4[j].dqdt.y - k3[j].dqdt.y);
-        }
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (i != j) {
-                    f(i, j, F, k0);
-                    mul(ball[i].m1, F, F);
-                    dVHelp = sum(dVHelp, F);
-                }
-            }
-            mul(o3 * h, dVHelp, dVHelp);
-            k5[i] = sum(k5[i], dVHelp);
-        }
+        correct = false;
 
         //Final
 
@@ -413,22 +479,13 @@ public class Main {
 
         for (int i = 0; i < n; ++i) {
             if (!isHChenge) {
-                er[i] = ((k4[i].q.x * 2 - k3[i].q.x * 3 - k5[i].q.x) * (k4[i].q.x * 2 - k3[i].q.x * 3 - k5[i].q.x) + (k4[i].q.y * 2 - k3[i].q.y * 3 - k5[i].q.y) * (k4[i].q.y * 2 - k3[i].q.y * 3 - k5[i].q.y)) + (k4[i].dqdt.x * 2 - k3[i].dqdt.x * 3 - k5[i].dqdt.x) * (k4[i].dqdt.x * 2 - k3[i].dqdt.x * 3 - k5[i].dqdt.x) + (k4[i].dqdt.y * 2 - k3[i].dqdt.y * 3 - k5[i].dqdt.y) * (k4[i].dqdt.y * 2 - k3[i].dqdt.y * 3 - k5[i].dqdt.y);
-                if (er[i] > (eps * eps)) {
-                    h = h * 0.5;
+                if (er[i] > (o32 * o32 * eps * eps)) {
                     isHChenge = true;
                 }
             }
-
-
         }
-        for (int i = 0; i < n; ++i) {
-            if (!isHChenge) {
-                if (er[i] < (o32 * o32 * eps * eps)) {
-                    h = h * 2;
-                    isHChenge = true;
-                }
-            }
+        if (!isHChenge) {
+            h = h * 2;
         }
         isHChenge = false;
         return 0;
