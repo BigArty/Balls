@@ -72,14 +72,14 @@ public class Energy extends Thread {
             g.drawOval(t, 300 + (int) (((vx * vx + vy * vy) / Main.M) * -10000), 1, 1);
             g.setColor(Color.RED);
 
-            g.fillOval(t, 300 + (int) (-E2*u2 / 500), 2, 2);
+            g.fillOval(t, 300 + (int) (-E2*u2 / (50000*Main.gravity)), 2, 2);
             g.setColor(Color.GREEN);
-            g.fillOval(t, 300 + (int) (-(E2 + E*k)*u2 / 500), 2, 2);
-            g.drawLine(t-1,300+(int) (-lastE*u2/500),t, 300 + (int) (-(E2 + E*k)*u2 / 500));
+            g.fillOval(t, 300 + (int) (-(E2 + E*k)*u2 / (50000*Main.gravity)), 2, 2);
+            g.drawLine(t-1,300+(int) (-lastE*u2/(50000*Main.gravity)),t, 300 + (int) (-(E2 + E*k)*u2 / (50000*Main.gravity)));
             lastE=E2 + E*k;
             En.repaint();
             try {
-                Thread.sleep(500);
+                Thread.sleep(1500);
             } catch (InterruptedException ignored) {
             }
             x = 0;

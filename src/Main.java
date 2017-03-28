@@ -1,18 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class Main {
-    static double gravity = 0.03;
-    static int n = 100;
+    static double gravity = 0.1;
+    static int n = 50;
     static Ball[] ball;
     static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-    private static double startH = 0.001;
-    private static double eps = 0.001*(n*n/4900);
-    private static double epsV = 0.001*n*n/4900;
+    private static double startH = 0.00001;
+    private static double eps = 0.001 * n * n / 4900;
+    private static double epsV = 0.001 * n * n / 4900;
     private static double h = startH;
-
     private static doblCoord aHelp = new doblCoord();
     private static doblCoord[] dV = new doblCoord[n];
     private static double E = 0;
@@ -23,7 +23,6 @@ public class Main {
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         f.setMinimumSize(new Dimension(width / 4, height / 4));
         f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
         ball = new Ball[n];
         Color c;
         double e;
@@ -36,7 +35,6 @@ public class Main {
             k3[i] = new ddoblCoord();
             k4[i] = new ddoblCoord();
             k5[i] = new ddoblCoord();
-
             ball[i] = new Ball();
             ball[i].q = new ddoblCoord();
             while (!OK) {
@@ -113,11 +111,7 @@ public class Main {
             ball[i].q.dqdt.x -= Vx;
             ball[i].q.dqdt.y -= Vy;
         }
-
-
         new Energy();
-
-
         doblCoord V1n = new doblCoord();
         doblCoord V2n = new doblCoord();
         doblCoord V1n2 = new doblCoord();
@@ -125,6 +119,10 @@ public class Main {
         doblCoord H = new doblCoord();
         double norm, t = 0;
         doblCoord iHelp = new doblCoord();
+        Listner L = new Listner();
+        f.addMouseListener(L);
+        f.addMouseMotionListener(L);
+        f.addMouseWheelListener(L);
 
         while (true) {
             t = 0;
@@ -287,17 +285,21 @@ public class Main {
     private static double dist2 = 0;
 
     private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+        helpDouble2 = 0;
         dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
         if ((dist2) > ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
             N.x = a[i].q.x - a[j].q.x;
             N.y = a[i].q.y - a[j].q.y;
             if ((dist2) <= ((ball[i].r + ball[j].r + 8) * (ball[i].r + ball[j].r + 8))) {
                 helpDouble2 = 1000.0 / (dist2 - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
-            } else {
-                helpDouble = 1/(dist2*dist2*dist2);
-                helpDouble3 = Math.sqrt(helpDouble);
-                helpDouble2 = -gravity * ball[i].m * ball[j].m * (helpDouble3);
             }
+            helpDouble = 1 / (dist2 * dist2 * dist2);
+            helpDouble3 = Math.sqrt(helpDouble);
+
+                /*helpDouble3=1/dist2;*/
+
+            helpDouble2 += -gravity * ball[i].m * ball[j].m * (helpDouble3);
+
             mul(helpDouble2, N, F.dqdt);
 
         } else {
@@ -310,7 +312,7 @@ public class Main {
         return F;
     }
 
-    private static void mem(ddoblCoord dest, ddoblCoord from) {
+    static void mem(ddoblCoord dest, ddoblCoord from) {
         dest.q.x = from.q.x;
         dest.q.y = from.q.y;
         dest.dqdt.x = from.dqdt.x;
@@ -325,7 +327,7 @@ public class Main {
     private static double[] er = new double[n];
     private static double[] erV = new double[n];
     private static boolean isHChenge = false;
-    private static ddoblCoord nul = new ddoblCoord();
+    static ddoblCoord nul = new ddoblCoord();
     private static boolean correct = false;
 
     static int mersonStep() {
@@ -506,5 +508,70 @@ class ddoblCoord {
     ddoblCoord() {
         q = new doblCoord();
         dqdt = new doblCoord();
+    }
+}
+
+class Listner implements MouseListener, MouseMotionListener, MouseWheelListener {
+    double x = 0;
+    double y = 0;
+    boolean pressed = false;
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            x = e.getX();
+            y = e.getY();
+            pressed = true;
+        }
+        if (e.getButton() == MouseEvent.BUTTON2) {
+            for (int i = 0; i < Main.n; ++i) {
+                Main.ball[i].q.dqdt = new doblCoord();
+            }
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            pressed = false;
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (pressed) {
+            x = x - e.getX();
+            y = y - e.getY();
+            Canvas1.dX += x;
+            Canvas1.dY += y;
+            x = e.getX();
+            y = e.getY();
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        int notches = e.getWheelRotation();
+        Canvas1.h *= Math.pow(1.05, -notches);
     }
 }
