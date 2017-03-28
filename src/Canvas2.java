@@ -10,6 +10,6 @@ public class Canvas2 extends JComponent {
         setOpaque(false);
         Graphics2D g = (Graphics2D) a;
         g.drawImage(Energy.img,rop,0,0);
-        g.drawLine(30,200,30+(int)(100000*Energy.x/Main.M),200+(int)(100000*Energy.y/Main.M));
+        g.drawLine(30,200,30+(int)(100000*Energy.vx/Main.M),200+(int)(100000*Energy.vy/Main.M));
     }
 }

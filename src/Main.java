@@ -2,15 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-    static double gravity = 0.0003;
-    static int n = 70;
+    static double gravity = 0.03;
+    static int n = 100;
     static Ball[] ball;
     static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
     private static double startH = 0.001;
-    private static double eps = 0.001;
-    private static double epsV = 0.001;
+    private static double eps = 0.001*(n*n/4900);
+    private static double epsV = 0.001*n*n/4900;
     private static double h = startH;
 
     private static doblCoord aHelp = new doblCoord();
@@ -284,29 +284,25 @@ public class Main {
     private static double helpDouble2;
     private static double helpDouble3;
     private static doblCoord N = new doblCoord();
-    private static double dist = 0;
+    private static double dist2 = 0;
 
     private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
-        dist = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
-        if ((dist) > ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
+        dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
+        if ((dist2) > ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
             N.x = a[i].q.x - a[j].q.x;
             N.y = a[i].q.y - a[j].q.y;
-            //helpDouble = Math.sqrt(dist);
-            if ((dist) <= ((ball[i].r + ball[j].r + 8) * (ball[i].r + ball[j].r + 8))) {
-                helpDouble2 = 1000.0/(dist - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
-            }
-            else {
-                helpDouble= (dist++);
-                helpDouble2 = -gravity * ball[i].m * ball[j].m / (helpDouble);
+            if ((dist2) <= ((ball[i].r + ball[j].r + 8) * (ball[i].r + ball[j].r + 8))) {
+                helpDouble2 = 1000.0 / (dist2 - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
+            } else {
+                helpDouble = 1/(dist2*dist2*dist2);
+                helpDouble3 = Math.sqrt(helpDouble);
+                helpDouble2 = -gravity * ball[i].m * ball[j].m * (helpDouble3);
             }
             mul(helpDouble2, N, F.dqdt);
 
         } else {
-
-
             F.dqdt.x = 0;
             F.dqdt.y = 0;
-
         }
         F.q.x = a[i].dqdt.x;
         F.q.y = a[i].dqdt.y;
