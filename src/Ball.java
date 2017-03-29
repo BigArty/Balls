@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Ball {
+class Ball {
     ddoblCoord q;
     double r;
     double  m;

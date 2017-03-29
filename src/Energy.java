@@ -9,7 +9,6 @@ public class Energy extends Thread {
 
     private static JFrame En = new JFrame("Energy");
     static BufferedImage img;
-    static Graphics2D g;
     static double x = 0;
     static double y = 0;
     static double vx = 0;
@@ -20,15 +19,15 @@ public class Energy extends Thread {
         double u=70.0/Main.n;
         double u2=70.0*69/(Main.n*(Main.n-1));
         img = new BufferedImage(Main.width, Main.height, BufferedImage.TYPE_INT_ARGB);
-        g = (Graphics2D) img.getGraphics();
+        Graphics2D g = (Graphics2D) img.getGraphics();
         g.setColor(Color.black);
         En.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         En.setLocation(0, 0);
         En.setMinimumSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 4, Toolkit.getDefaultToolkit().getScreenSize().height / 4));
         En.add(new Canvas2());
         En.setVisible(true);
-        double E = 0;
-        double E2 = 0;
+        double E;
+        double E2;
         int t = 0;
         g.drawLine(0, 300, 0, 800);
 

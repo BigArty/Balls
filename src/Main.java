@@ -6,17 +6,29 @@ public class Main {
     static double gravity = 0.1;
     static int n = 50;
     static Ball[] ball;
-    static JFrame f = new JFrame("Balls");
+    private static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
     private static double startH = 0.00001;
     private static double eps = 0.001 * n * n / 4900;
     private static double epsV = 0.001 * n * n / 4900;
     private static double h = startH;
-    private static doblCoord aHelp = new doblCoord();
-    private static doblCoord[] dV = new doblCoord[n];
-    private static double E = 0;
     static double M = 0;
+    private static double helpDouble;
+    private static double helpDouble2;
+    private static double helpDouble3;
+    private static doblCoord N = new doblCoord();
+    private static double dist2 = 0;
+    private static ddoblCoord[] k1 = new ddoblCoord[n], k2 = new ddoblCoord[n], k3 = new ddoblCoord[n], k4 = new ddoblCoord[n], k5 = new ddoblCoord[n], k0 = new ddoblCoord[n];
+    private static double o3;
+    private static double o32 = 1.0 / 32;
+    private static ddoblCoord F = new ddoblCoord();
+    private static ddoblCoord dVHelp = new ddoblCoord();
+    private static double[] er = new double[n];
+    private static double[] erV = new double[n];
+    private static boolean isHChenge = false;
+    private static ddoblCoord nul = new ddoblCoord();
+    private static boolean correct = false;
 
     public static void main(String[] args) {
         f.setLocation(0, 0);
@@ -25,7 +37,6 @@ public class Main {
         f.setExtendedState(JFrame.MAXIMIZED_BOTH);
         ball = new Ball[n];
         Color c;
-        double e;
         boolean OK = false;
         o3 = 1.0 / 3;
         for (int i = 0; i < n; i++) {
@@ -55,7 +66,6 @@ public class Main {
             ball[i].m = ball[i].r * ball[i].r;
             ball[i].m1 = 1.0 / ball[i].m;
             System.out.println(ball[i].m + " " + ball[i].m1);
-            E += ball[i].m * (ball[i].q.dqdt.x * ball[i].q.dqdt.x + ball[i].q.dqdt.y * ball[i].q.dqdt.y);
             switch (col) {
                 case 1:
                     c = Color.BLACK;
@@ -91,7 +101,6 @@ public class Main {
                     c = Color.blue;
             }
             ball[i].c = c;
-            dV[i] = new doblCoord();
         }
         System.out.println("window");
         f.add(new Canvas1());
@@ -112,13 +121,7 @@ public class Main {
             ball[i].q.dqdt.y -= Vy;
         }
         new Energy();
-        doblCoord V1n = new doblCoord();
-        doblCoord V2n = new doblCoord();
-        doblCoord V1n2 = new doblCoord();
-        doblCoord V2n2 = new doblCoord();
-        doblCoord H = new doblCoord();
-        double norm, t = 0;
-        doblCoord iHelp = new doblCoord();
+        double t;
         Listner L = new Listner();
         f.addMouseListener(L);
         f.addMouseMotionListener(L);
@@ -135,121 +138,7 @@ public class Main {
                 t += h;
                 mersonStep();
             }
-            /*for (int i = 0; i < n; ++i) {
-                if ((ball[i].q.q.x > height - ball[i].r)) {
-                    ball[i].q.dqdt.x = -ball[i].q.dqdt.x;
-                    ball[i].q.q.x = ball[i].q.q.x - 1;
-                } else {
-                    if ((ball[i].q.q.x < ball[i].r)) {
-                        ball[i].q.dqdt.x = -ball[i].q.dqdt.x;
-                        ball[i].q.q.x = ball[i].q.q.x + 1;
-
-                    }
-                }
-                if ((ball[i].q.q.y > width - ball[i].r)) {
-                    ball[i].q.dqdt.y = -ball[i].q.dqdt.y;
-                    ball[i].q.q.y = ball[i].q.q.y - 1;
-                } else {
-                    if ((ball[i].q.q.y < ball[i].r)) {
-
-                        ball[i].q.dqdt.y = -ball[i].q.dqdt.y;
-                        ball[i].q.q.y = ball[i].q.q.y + 1;
-                    }
-                }
-            }*/
-
-            /*e = 0;
-            for (int i = 0; i < n; ++i) {
-                dV[i].x = 0;
-                dV[i].y = 0;
-                ball[i].q.q.x = ball[i].q.q.x + ball[i].q.dqdt.x;
-                ball[i].q.q.y = ball[i].q.q.y + ball[i].q.dqdt.y;
-                if ((ball[i].q.q.x > height - ball[i].r) || (ball[i].q.q.x < ball[i].r)) {
-                    ball[i].q.dqdt.x = -ball[i].q.dqdt.x;
-                    ball[i].q.q.x = ball[i].q.q.x + ball[i].q.dqdt.x;
-                }
-                if ((ball[i].q.q.y > width - ball[i].r) || (ball[i].q.q.y < ball[i].r)) {
-                    ball[i].q.dqdt.y = -ball[i].q.dqdt.y;
-                    ball[i].q.q.y = ball[i].q.q.y + ball[i].q.dqdt.y;
-                }
-
-                e += ball[i].m * (ball[i].q.dqdt.x * ball[i].q.dqdt.x + ball[i].q.dqdt.y * ball[i].q.dqdt.y);
-
-            }
-            if (E > e * 1.2) {
-                for (int i = 0; i < n; ++i) {
-                    ball[i].q.dqdt.x *= 1.08;
-                    ball[i].q.dqdt.y *= 1.08;
-                    //System.out.println(1+"");
-                }
-            }
-            if (e > E * 1.2) {
-                for (int i = 0; i < n; ++i) {
-                    ball[i].q.dqdt.x *= 0.91;
-                    ball[i].q.dqdt.y *= 0.91;
-                }
-            }
-            for (int i = 0; i < n; ++i) {
-                for (int j = i + 1; j < n; ++j) {
-                    if (((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y)) <= ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
-
-                        H.x = ball[i].q.q.x - ball[j].q.q.x;
-                        H.y = ball[i].q.q.y - ball[j].q.q.y;
-                        norm = Math.sqrt(H.x * H.x + H.y * H.y);
-                        norm = 1.0 / norm;
-                        H.x = H.x * norm;
-                        H.y = H.y * norm;
-
-                        mul((ball[i].q.dqdt.x * H.x + ball[i].q.dqdt.y * H.y), H);
-                        V1n.x = aHelp.x;
-                        V1n.y = aHelp.y;
-                        mul((ball[j].q.dqdt.x * H.x + ball[j].q.dqdt.y * H.y), H);
-                        V2n.x = aHelp.x;
-                        V2n.y = aHelp.y;
-                        iHelp.x = V2n.x - V1n.x;
-                        iHelp.y = V2n.y - V1n.y;
-                        if ((iHelp.x * H.x + iHelp.y * H.y) > 0) {
-                            dV[i].x -= V1n.x;
-                            dV[i].y -= V1n.y;
-                            dV[j].x -= V2n.x;
-                            dV[j].y -= V2n.y;
-
-                            mul(2 * ball[i].m, V1n);
-                            V2n2.x = aHelp.x;
-                            V2n2.y = aHelp.y;
-                            mul(ball[j].m - ball[i].m, V2n);
-                            V2n2 = sum(V2n2, aHelp);
-                            //System.out.println(V2n2.x+" "+V2n2.y);
-                            mul(1.0 / (ball[j].m + ball[i].m), V2n2);
-                            dV[j].x += aHelp.x;
-                            dV[j].y += aHelp.y;
-                            mul(2 * ball[j].m, V2n);
-                            V1n2.x = aHelp.x;
-                            V2n2.y = aHelp.y;
-                            mul(ball[i].m - ball[j].m, V1n);
-                            V1n2 = sum(V1n2, aHelp);
-                            mul(1.0 / (ball[j].m + ball[i].m), V1n2);
-                            dV[i].x += aHelp.x;
-                            dV[i].y += aHelp.y;
-                        }
-                    }
-
-                }
-            }
-            for (int i = 0; i < n; ++i) {
-                if ((dV[i].x < 1000) && (dV[i].y < 1000)) {
-                    ball[i].q.dqdt.x += dV[i].x;
-                    dV[i].x = 0;
-                    ball[i].q.dqdt.y += dV[i].y;
-                    dV[i].y = 0;
-                }
-            }*/
         }
-    }
-
-    private static void mul(double t, doblCoord v) {
-        aHelp.x = v.x * t;
-        aHelp.y = v.y * t;
     }
 
     private static void mul(double t, doblCoord v, doblCoord V1) {
@@ -264,12 +153,6 @@ public class Main {
         V1.dqdt.y = v.dqdt.y * t;
     }
 
-    private static doblCoord sum(doblCoord o1, doblCoord o2) {
-        o1.x = o1.x + o2.x;
-        o1.y = o1.y + o2.y;
-        return o1;
-    }
-
     private static ddoblCoord sum(ddoblCoord o1, ddoblCoord o2) {
         o1.q.x = o1.q.x + o2.q.x;
         o1.q.y = o1.q.y + o2.q.y;
@@ -277,12 +160,6 @@ public class Main {
         o1.dqdt.y = o1.dqdt.y + o2.dqdt.y;
         return o1;
     }
-
-    private static double helpDouble;
-    private static double helpDouble2;
-    private static double helpDouble3;
-    private static doblCoord N = new doblCoord();
-    private static double dist2 = 0;
 
     private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
         helpDouble2 = 0;
@@ -312,25 +189,14 @@ public class Main {
         return F;
     }
 
-    static void mem(ddoblCoord dest, ddoblCoord from) {
+    private static void mem(ddoblCoord dest, ddoblCoord from) {
         dest.q.x = from.q.x;
         dest.q.y = from.q.y;
         dest.dqdt.x = from.dqdt.x;
         dest.dqdt.y = from.dqdt.y;
     }
 
-    private static ddoblCoord[] k1 = new ddoblCoord[n], k2 = new ddoblCoord[n], k3 = new ddoblCoord[n], k4 = new ddoblCoord[n], k5 = new ddoblCoord[n], k0 = new ddoblCoord[n];
-    private static double o3;
-    private static double o32 = 1.0 / 32;
-    private static ddoblCoord F = new ddoblCoord();
-    private static ddoblCoord dVHelp = new ddoblCoord();
-    private static double[] er = new double[n];
-    private static double[] erV = new double[n];
-    private static boolean isHChenge = false;
-    static ddoblCoord nul = new ddoblCoord();
-    private static boolean correct = false;
-
-    static int mersonStep() {
+    private static int mersonStep() {
         while (!correct) {
             isHChenge = false;
             for (int i = 0; i < n; ++i) {
@@ -512,9 +378,9 @@ class ddoblCoord {
 }
 
 class Listner implements MouseListener, MouseMotionListener, MouseWheelListener {
-    double x = 0;
-    double y = 0;
-    boolean pressed = false;
+    private double x = 0;
+    private double y = 0;
+    private boolean pressed = false;
 
     @Override
     public void mouseClicked(MouseEvent e) {
