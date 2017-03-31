@@ -4,7 +4,7 @@ import java.awt.event.*;
 
 public class Main {
     static double gravity = 0.1;
-    static int n = 50;
+    static int n = 70;
     static Ball[] ball;
     private static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -134,7 +134,7 @@ public class Main {
             } catch (InterruptedException ignored) {
             }*/
             f.repaint();
-            while (t < 0.09) {
+            while (t < 0.04) {
                 t += h;
                 mersonStep();
             }
@@ -398,6 +398,10 @@ class Listner implements MouseListener, MouseMotionListener, MouseWheelListener 
             for (int i = 0; i < Main.n; ++i) {
                 Main.ball[i].q.dqdt = new doblCoord();
             }
+        }
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            Canvas1.dX = 0;
+            Canvas1.dY = 0;
         }
     }
 
