@@ -126,6 +126,7 @@ public class Main {
         f.addMouseListener(L);
         f.addMouseMotionListener(L);
         f.addMouseWheelListener(L);
+        f.addKeyListener(L);
 
         while (true) {
             t = 0;
@@ -377,7 +378,7 @@ class ddoblCoord {
     }
 }
 
-class Listner implements MouseListener, MouseMotionListener, MouseWheelListener {
+class Listner implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
     private double x = 0;
     private double y = 0;
     private boolean pressed = false;
@@ -443,5 +444,25 @@ class Listner implements MouseListener, MouseMotionListener, MouseWheelListener 
     public void mouseWheelMoved(MouseWheelEvent e) {
         int notches = e.getWheelRotation();
         Canvas1.h *= Math.pow(1.05, -notches);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode()==KeyEvent.VK_UP){
+            Main.gravity*=1.01;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_DOWN){
+            Main.gravity*=1.0/1.01;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

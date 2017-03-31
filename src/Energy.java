@@ -124,7 +124,7 @@ public class Energy extends Thread {
             lastE = E2 + E * k;
             En.repaint();
             try {
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException ignored) {
             }
             x = 0;
