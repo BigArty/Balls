@@ -49,6 +49,8 @@ public class Energy extends Thread {
         start();
     }
 
+    static int working = 0;
+
     private static JFrame En = new JFrame("Energy");
     static BufferedImage img;
     static Graphics2D g;
@@ -56,12 +58,15 @@ public class Energy extends Thread {
     static double y = 0;
     static double vx = 0;
     static double vy = 0;
-    static boolean first = true;
     static boolean work = true;
     static int t = 0;
 
     @Override
     public void run() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
         double u = 70.0 / Main.n;
         double u2 = 70.0 * 69 / (Main.n * (Main.n - 1));
         En.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -70,6 +75,7 @@ public class Energy extends Thread {
         En.add(new Canvas2());
         En.setVisible(true);
         En.addMouseListener(new Listner2());
+        working = 1;
         img = new BufferedImage(Main.width, Main.height, BufferedImage.TYPE_INT_ARGB);
         double E;
         double E2;
@@ -127,6 +133,7 @@ public class Energy extends Thread {
                 Thread.sleep(200);
             } catch (InterruptedException ignored) {
             }
+            System.out.println("" + Main.ball[20].q.dqdt.x);
             x = 0;
             y = 0;
             t += 1;

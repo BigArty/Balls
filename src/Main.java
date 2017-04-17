@@ -3,8 +3,15 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Main {
+
+    private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+        return fbord(i, j, F, a);
+    }
+
     static double gravity = 0.1;
-    static int n = 70;
+    private static int minR = 10;
+    private static int rndR = 0;
+    static int n = 100;
     static Ball[] ball;
     private static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -19,6 +26,7 @@ public class Main {
     private static double helpDouble3;
     private static doblCoord N = new doblCoord();
     private static double dist2 = 0;
+    private static double dist = 0;
     private static ddoblCoord[] k1 = new ddoblCoord[n], k2 = new ddoblCoord[n], k3 = new ddoblCoord[n], k4 = new ddoblCoord[n], k5 = new ddoblCoord[n], k0 = new ddoblCoord[n];
     private static double o3;
     private static double o32 = 1.0 / 32;
@@ -49,9 +57,9 @@ public class Main {
             ball[i] = new Ball();
             ball[i].q = new ddoblCoord();
             while (!OK) {
-                ball[i].r = (int) (Math.random() * 30) + 10;
-                ball[i].q.q.x = (2 * ball[i].r + Math.random() * (height - 4 * ball[i].r));
-                ball[i].q.q.y = (2 * ball[i].r + Math.random() * (width - 4 * ball[i].r));
+                ball[i].r = (int) (Math.random() * rndR) + minR;
+                ball[i].q.q.x = (2 * ball[i].r + Math.random() * (height / 1.34 - 4 * ball[i].r));
+                ball[i].q.q.y = (2 * ball[i].r + Math.random() * (width / 1.34 - 4 * ball[i].r));
                 OK = true;
                 for (int j = 0; j < i; ++j) {
                     if (((ball[i].r + ball[j].r + 4) * (ball[i].r + ball[j].r + 4)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
@@ -60,8 +68,8 @@ public class Main {
                 }
             }
             OK = false;
-            ball[i].q.dqdt.x = ((Math.random() * 1)) / 100;
-            ball[i].q.dqdt.y = ((Math.random() * 1)) / 100;
+            ball[i].q.dqdt.x = ((Math.random() * 1)) / 2;
+            ball[i].q.dqdt.y = ((Math.random() * 1)) / 2;
             int col = (int) (Math.random() * 10);
             ball[i].m = ball[i].r * ball[i].r;
             ball[i].m1 = 1.0 / ball[i].m;
@@ -120,13 +128,15 @@ public class Main {
             ball[i].q.dqdt.x -= Vx;
             ball[i].q.dqdt.y -= Vy;
         }
-        new Energy();
         double t;
         Listner L = new Listner();
         f.addMouseListener(L);
         f.addMouseMotionListener(L);
         f.addMouseWheelListener(L);
         f.addKeyListener(L);
+        new Velosity();
+        new Energy();
+        new Check();
 
         while (true) {
             t = 0;
@@ -162,31 +172,75 @@ public class Main {
         return o1;
     }
 
-    private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+    private static ddoblCoord fbord(int i, int j, ddoblCoord F, ddoblCoord[] a) {
         helpDouble2 = 0;
         dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
+        F.dqdt.x = 0;
+        F.dqdt.y = 0;
+
         if ((dist2) > ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
+            if ((dist2) <= ((ball[i].r + ball[j].r + 8) * (ball[i].r + ball[j].r + 8))) {
+                N.x = a[i].q.x - a[j].q.x;
+                N.y = a[i].q.y - a[j].q.y;
+                helpDouble2 = 1000.0 / (dist2 - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
+                mul(helpDouble2, N, F.dqdt);
+            }
+
+        }
+        if (a[i].q.x - ball[i].r < 4) {
+            F.dqdt.x += 1000.0 / (a[i].q.x - ball[i].r) - 250;
+        }
+        if (a[i].q.y - ball[i].r < 4) {
+            F.dqdt.y += 1000.0 / (a[i].q.y - ball[i].r) - 250;
+        }
+        if (a[i].q.x + ball[i].r > height - 62) {
+            F.dqdt.x -= 1000.0 / (height - 58 - a[i].q.x - ball[i].r) - 250;
+        }
+        if (a[i].q.y + ball[i].r > width) {
+            F.dqdt.y -= 1000.0 / (width + 4 - a[i].q.y - ball[i].r) - 250;
+        }
+        F.q.x = a[i].dqdt.x;
+        F.q.y = a[i].dqdt.y;
+        return F;
+    }
+
+    private static ddoblCoord fmol(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+        helpDouble2 = 0;
+        dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
+        F.dqdt.x = 0;
+        F.dqdt.y = 0;
+
+        dist = Math.sqrt(dist2);
+        N.x = a[i].q.x - a[j].q.x;
+        N.y = a[i].q.y - a[j].q.y;
+        helpDouble2 = 1000000.0 / (dist*dist2*dist2*dist2);
+        helpDouble3 = 10.0 / (dist2 * dist);
+        helpDouble2 += -gravity * ball[i].m * ball[j].m * (helpDouble3);
+        mul(helpDouble2, N, F.dqdt);
+
+        F.q.x = a[i].dqdt.x;
+        F.q.y = a[i].dqdt.y;
+        return F;
+    }
+
+    private static ddoblCoord fgrav(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+        helpDouble2 = 0;
+        dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
+        F.dqdt.x = 0;
+        F.dqdt.y = 0;
+        if ((dist2) > ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
+            dist = Math.sqrt(dist2);
             N.x = a[i].q.x - a[j].q.x;
             N.y = a[i].q.y - a[j].q.y;
             if ((dist2) <= ((ball[i].r + ball[j].r + 8) * (ball[i].r + ball[j].r + 8))) {
                 helpDouble2 = 1000.0 / (dist2 - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
             }
-            helpDouble = 1 / (dist2 * dist2 * dist2);
-            helpDouble3 = Math.sqrt(helpDouble);
-
-                /*helpDouble3=1/dist2;*/
-
+            helpDouble3 = 1 / (dist2 * dist);
             helpDouble2 += -gravity * ball[i].m * ball[j].m * (helpDouble3);
-
             mul(helpDouble2, N, F.dqdt);
-
-        } else {
-            F.dqdt.x = 0;
-            F.dqdt.y = 0;
         }
         F.q.x = a[i].dqdt.x;
         F.q.y = a[i].dqdt.y;
-
         return F;
     }
 
@@ -453,11 +507,11 @@ class Listner implements MouseListener, MouseMotionListener, MouseWheelListener,
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode()==KeyEvent.VK_UP){
-            Main.gravity*=1.01;
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            Main.gravity *= 1.01;
         }
-        if(e.getKeyCode()==KeyEvent.VK_DOWN){
-            Main.gravity*=1.0/1.01;
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            Main.gravity *= 1.0 / 1.01;
         }
     }
 
