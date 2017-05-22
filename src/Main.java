@@ -16,8 +16,8 @@ public class Main {
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
     private static double startH = 0.00001;
-    private static double eps = 0.0001 * n * n / 4900;
-    private static double epsV = 0.0001 * n * n / 4900;
+    static double eps = 0.001 * n * n / 4900;
+    static double epsV = 0.001 * n * n / 4900;
     private static double h = startH;
     static double M = 0;
     private static double helpDouble;
@@ -206,8 +206,8 @@ public class Main {
         helpDouble2 += -gravity * 20 * ball[i].m * ball[j].m * (helpDouble3 + helpDouble);
         mul(helpDouble2, N, F.dqdt);
         //Затухание
-        F.dqdt.y -= eps * a[i].dqdt.y * 0.1;
-        F.dqdt.x -= eps * a[i].dqdt.x * 0.1;
+        //F.dqdt.y -= eps * a[i].dqdt.y * 0.1;
+        //F.dqdt.x -= eps * a[i].dqdt.x * 0.1;
 
         F.q.x = a[i].dqdt.x;
         F.q.y = a[i].dqdt.y;
@@ -501,6 +501,15 @@ class Listner implements MouseListener, MouseMotionListener, MouseWheelListener,
         }
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             Main.gravity *= 1.0 / 1.01;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            Main.epsV *= 2;
+            Main.eps *= 2;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            Main.epsV *= 0.5;
+            Main.eps *= 0.5;
         }
     }
 

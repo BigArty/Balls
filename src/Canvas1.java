@@ -16,6 +16,8 @@ public class Canvas1 extends JComponent {
             g.setColor(Color.black);
            // g.drawString(i+"",(int)((Main.ball[i].q.q.y-dX)*h), (int) (((Main.ball[i].q.q.x)-dY)*h));
             g.drawString("Graviti = "+Main.gravity,20,100);
+
+            g.drawString("eps = "+Main.eps,20,60);
             //g.fillOval((int)(((Energy.y)/Main.M-5-dX)*h),(int)(((Energy.x)/Main.M-5-dY)*h),10,10);
         }
 
