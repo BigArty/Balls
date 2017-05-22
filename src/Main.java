@@ -4,21 +4,20 @@ import java.awt.event.*;
 
 public class Main {
 
-    private static ddoblCoord f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
-        return fbord(i, j, F, a);
+    private static void f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+        fmol(i, j, F, a);
     }
 
     static double gravity = 0.1;
-    private static int minR = 10;
+    private static int minR = 1;
     private static int rndR = 0;
-    static int n = 100;
+    static int n = 500;
     static Ball[] ball;
-    private static JFrame f = new JFrame("Balls");
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
     private static double startH = 0.00001;
-    private static double eps = 0.001 * n * n / 4900;
-    private static double epsV = 0.001 * n * n / 4900;
+    private static double eps = 0.0001 * n * n / 4900;
+    private static double epsV = 0.0001 * n * n / 4900;
     private static double h = startH;
     static double M = 0;
     private static double helpDouble;
@@ -39,10 +38,10 @@ public class Main {
     private static boolean correct = false;
 
     public static void main(String[] args) {
-        f.setLocation(0, 0);
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        f.setMinimumSize(new Dimension(width / 4, height / 4));
-        f.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        if (eps > 0.01) {
+            eps = 0.01;
+            epsV = 0.01;
+        }
         ball = new Ball[n];
         Color c;
         boolean OK = false;
@@ -55,14 +54,13 @@ public class Main {
             k4[i] = new ddoblCoord();
             k5[i] = new ddoblCoord();
             ball[i] = new Ball();
-            ball[i].q = new ddoblCoord();
             while (!OK) {
                 ball[i].r = (int) (Math.random() * rndR) + minR;
                 ball[i].q.q.x = (2 * ball[i].r + Math.random() * (height / 1.34 - 4 * ball[i].r));
                 ball[i].q.q.y = (2 * ball[i].r + Math.random() * (width / 1.34 - 4 * ball[i].r));
                 OK = true;
                 for (int j = 0; j < i; ++j) {
-                    if (((ball[i].r + ball[j].r + 4) * (ball[i].r + ball[j].r + 4)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
+                    if (((ball[i].r + ball[j].r + 10) * (ball[i].r + ball[j].r + 10)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
                         OK = false;
                     }
                 }
@@ -110,9 +108,6 @@ public class Main {
             }
             ball[i].c = c;
         }
-        System.out.println("window");
-        f.add(new Canvas1());
-        f.setVisible(true);
         double Vx = 0;
         double Vy = 0;
         for (int i = 0; i < Main.n; ++i) {
@@ -129,26 +124,19 @@ public class Main {
             ball[i].q.dqdt.y -= Vy;
         }
         double t;
-        Listner L = new Listner();
-        f.addMouseListener(L);
-        f.addMouseMotionListener(L);
-        f.addMouseWheelListener(L);
-        f.addKeyListener(L);
+        //Новые потоки
         new Velosity();
         new Energy();
+        new Temperature();
         new Check();
+        new Drowing();
 
         while (true) {
-            t = 0;
             /*try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {
             }*/
-            f.repaint();
-            while (t < 0.04) {
-                t += h;
-                mersonStep();
-            }
+            mersonStep();
         }
     }
 
@@ -172,7 +160,7 @@ public class Main {
         return o1;
     }
 
-    private static ddoblCoord fbord(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+    private static void fbord(int i, int j, ddoblCoord F, ddoblCoord[] a) {
         helpDouble2 = 0;
         dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
         F.dqdt.x = 0;
@@ -201,10 +189,9 @@ public class Main {
         }
         F.q.x = a[i].dqdt.x;
         F.q.y = a[i].dqdt.y;
-        return F;
     }
 
-    private static ddoblCoord fmol(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+    private static void fmol(int i, int j, ddoblCoord F, ddoblCoord[] a) {
         helpDouble2 = 0;
         dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
         F.dqdt.x = 0;
@@ -213,17 +200,20 @@ public class Main {
         dist = Math.sqrt(dist2);
         N.x = a[i].q.x - a[j].q.x;
         N.y = a[i].q.y - a[j].q.y;
-        helpDouble2 = 1000000.0 / (dist*dist2*dist2*dist2);
-        helpDouble3 = 10.0 / (dist2 * dist);
-        helpDouble2 += -gravity * ball[i].m * ball[j].m * (helpDouble3);
+        helpDouble = 1 / (dist2 * dist);
+        helpDouble3 = 1000000.0 / (dist2 * dist2 * dist2 * dist);
+        helpDouble2 = 100.0 * dist * helpDouble3 * helpDouble3;
+        helpDouble2 += -gravity * 20 * ball[i].m * ball[j].m * (helpDouble3 + helpDouble);
         mul(helpDouble2, N, F.dqdt);
+        //Затухание
+        F.dqdt.y -= eps * a[i].dqdt.y * 0.1;
+        F.dqdt.x -= eps * a[i].dqdt.x * 0.1;
 
         F.q.x = a[i].dqdt.x;
         F.q.y = a[i].dqdt.y;
-        return F;
     }
 
-    private static ddoblCoord fgrav(int i, int j, ddoblCoord F, ddoblCoord[] a) {
+    private static void fgrav(int i, int j, ddoblCoord F, ddoblCoord[] a) {
         helpDouble2 = 0;
         dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
         F.dqdt.x = 0;
@@ -232,7 +222,7 @@ public class Main {
             dist = Math.sqrt(dist2);
             N.x = a[i].q.x - a[j].q.x;
             N.y = a[i].q.y - a[j].q.y;
-            if ((dist2) <= ((ball[i].r + ball[j].r + 8) * (ball[i].r + ball[j].r + 8))) {
+            if ((dist) <= ((ball[i].r + ball[j].r + 8))) {
                 helpDouble2 = 1000.0 / (dist2 - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
             }
             helpDouble3 = 1 / (dist2 * dist);
@@ -241,7 +231,6 @@ public class Main {
         }
         F.q.x = a[i].dqdt.x;
         F.q.y = a[i].dqdt.y;
-        return F;
     }
 
     private static void mem(ddoblCoord dest, ddoblCoord from) {
@@ -482,8 +471,8 @@ class Listner implements MouseListener, MouseMotionListener, MouseWheelListener,
         if (pressed) {
             x = x - e.getX();
             y = y - e.getY();
-            Canvas1.dX += x;
-            Canvas1.dY += y;
+            Canvas1.dX += x * 1.0 / Canvas1.h;
+            Canvas1.dY += y * 1.0 / Canvas1.h;
             x = e.getX();
             y = e.getY();
         }

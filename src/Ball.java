@@ -6,4 +6,7 @@ class Ball {
     double  m;
     Color c;
     double m1;
+    Ball() {
+        q = new ddoblCoord();
+    }
 }

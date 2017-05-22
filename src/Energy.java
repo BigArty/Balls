@@ -133,7 +133,6 @@ public class Energy extends Thread {
                 Thread.sleep(200);
             } catch (InterruptedException ignored) {
             }
-            System.out.println("" + Main.ball[20].q.dqdt.x);
             x = 0;
             y = 0;
             t += 1;
