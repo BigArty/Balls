@@ -5,13 +5,13 @@ import java.awt.event.*;
 public class Main {
 
     private static void f(int i, int j, ddoblCoord F, ddoblCoord[] a) {
-        fmol(i, j, F, a);
+        fgrav(i, j, F, a);
     }
 
     static double gravity = 0.1;
-    private static int minR = 1;
-    private static int rndR = 0;
-    static int n = 500;
+    private static int minR = 10;
+    private static int rndR = 10;
+    static int n = 70;
     static Ball[] ball;
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
@@ -56,8 +56,8 @@ public class Main {
             ball[i] = new Ball();
             while (!OK) {
                 ball[i].r = (int) (Math.random() * rndR) + minR;
-                ball[i].q.q.x = (2 * ball[i].r + Math.random() * (height / 1.34 - 4 * ball[i].r));
-                ball[i].q.q.y = (2 * ball[i].r + Math.random() * (width / 1.34 - 4 * ball[i].r));
+                ball[i].q.q.x = (10+2 * ball[i].r + Math.random() * (height / 1.34 - 4 * ball[i].r));
+                ball[i].q.q.y = (10+2 * ball[i].r + Math.random() * (width / 1.34 - 4 * ball[i].r));
                 OK = true;
                 for (int j = 0; j < i; ++j) {
                     if (((ball[i].r + ball[j].r + 10) * (ball[i].r + ball[j].r + 10)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
@@ -66,8 +66,8 @@ public class Main {
                 }
             }
             OK = false;
-            ball[i].q.dqdt.x = ((Math.random() * 1)) / 2;
-            ball[i].q.dqdt.y = ((Math.random() * 1)) / 2;
+            ball[i].q.dqdt.x = ((Math.random() * 10)) / 2;
+            ball[i].q.dqdt.y = ((Math.random() * 10)) / 2;
             int col = (int) (Math.random() * 10);
             ball[i].m = ball[i].r * ball[i].r;
             ball[i].m1 = 1.0 / ball[i].m;
