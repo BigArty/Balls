@@ -9,8 +9,8 @@ public class Main {
     }
 
     static double gravity = 0.1;
-    private static int minR = 10;
-    private static int rndR = 10;
+    private static int minR = 20;
+    private static int rndR = 30;
     static int n = 70;
     static Ball[] ball;
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -18,6 +18,7 @@ public class Main {
     private static double startH = 0.00001;
     static double eps = 0.001 * n * n / 4900;
     static double epsV = 0.001 * n * n / 4900;
+    static double startV = 0.5;
     private static double h = startH;
     static double M = 0;
     private static double helpDouble;
@@ -60,14 +61,14 @@ public class Main {
                 ball[i].q.q.y = (10+2 * ball[i].r + Math.random() * (width / 1.34 - 4 * ball[i].r));
                 OK = true;
                 for (int j = 0; j < i; ++j) {
-                    if (((ball[i].r + ball[j].r + 10) * (ball[i].r + ball[j].r + 10)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
+                    if (((ball[i].r + ball[j].r + 20) * (ball[i].r + ball[j].r + 20)) > ((ball[i].q.q.x - ball[j].q.q.x) * (ball[i].q.q.x - ball[j].q.q.x) + (ball[i].q.q.y - ball[j].q.q.y) * (ball[i].q.q.y - ball[j].q.q.y))) {
                         OK = false;
                     }
                 }
             }
             OK = false;
-            ball[i].q.dqdt.x = ((Math.random() * 10)) / 2;
-            ball[i].q.dqdt.y = ((Math.random() * 10)) / 2;
+            ball[i].q.dqdt.x = ((Math.random() * startV)) / 2;
+            ball[i].q.dqdt.y = ((Math.random() * startV)) / 2;
             int col = (int) (Math.random() * 10);
             ball[i].m = ball[i].r * ball[i].r;
             ball[i].m1 = 1.0 / ball[i].m;
@@ -218,11 +219,11 @@ public class Main {
         dist2 = (a[i].q.x - a[j].q.x) * (a[i].q.x - a[j].q.x) + (a[i].q.y - a[j].q.y) * (a[i].q.y - a[j].q.y);
         F.dqdt.x = 0;
         F.dqdt.y = 0;
-        if ((dist2) > ((ball[i].r + ball[j].r) * (ball[i].r + ball[j].r))) {
+        if ((dist2) > ((ball[i].r + ball[j].r-2) * (ball[i].r + ball[j].r-2))) {
             dist = Math.sqrt(dist2);
             N.x = a[i].q.x - a[j].q.x;
             N.y = a[i].q.y - a[j].q.y;
-            if ((dist) <= ((ball[i].r + ball[j].r + 8))) {
+            if ((dist) <= ((ball[i].r + ball[j].r + 4))) {
                 helpDouble2 = 1000.0 / (dist2 - (ball[i].r + ball[j].r) * (ball[i].r + ball[j].r));
             }
             helpDouble3 = 1 / (dist2 * dist);

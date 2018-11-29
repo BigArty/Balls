@@ -67,8 +67,8 @@ public class Energy extends Thread {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {
         }
-        double u = 70.0 / Main.n;
-        double u2 = 70.0 * 69 / (Main.n * (Main.n - 1));
+        double u = 400.0 / Main.n / Main.n;
+        double u2 = 400.0 / (Main.n * Main.n);
         En.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         En.setLocation(0, 0);
         En.setMinimumSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width / 4, Toolkit.getDefaultToolkit().getScreenSize().height / 4));
@@ -83,11 +83,8 @@ public class Energy extends Thread {
         g.setColor(Color.black);
         g.drawLine(0, 300, 0, 800);
 
-        g.drawLine(0, 300, 1000, 300);
+        g.drawLine(0, 300, 1980, 300);
         g.setColor(Color.GRAY);
-        for (int i = 0; i < 400; ++i) {
-            g.drawLine(20 * i, 0, 20 * i, 800);
-        }
         double lastE = 0;
         int k = Main.n - 1;
 
