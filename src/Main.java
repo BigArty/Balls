@@ -16,8 +16,8 @@ public class Main {
     static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
     static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
     private static double startH = 0.00001;
-    static double eps = 0.001 * n * n / 4900;
-    static double epsV = 0.001 * n * n / 4900;
+    static double eps = 0.00001 * n * n / 4900;
+    static double epsV = 0.0001 * n * n / 4900;
     static double startV = 0.5;
     private static double h = startH;
     static double M = 0;
